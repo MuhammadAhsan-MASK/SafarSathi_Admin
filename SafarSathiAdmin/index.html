@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafarSathi | Admin Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="brand">
+            <i class="fas fa-compass"></i>
+            <span>SafarSathi Admin</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link active">Overview</a></li>
+            <li><a href="#" class="nav-link">Users</a></li>
+            <li><a href="#" class="nav-link">Listings</a></li>
+            <li><a href="#" class="nav-link">Trips</a></li>
+            <li><a href="#" class="nav-link">Approvals</a></li>
+        </ul>
+        <div class="user-pill" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(106, 27, 154, 0.05); padding: 0.5rem 1rem; border-radius: 12px; font-weight: 600; color: #6A1B9A;">
+            <i class="fas fa-shield-alt"></i>
+            <span>System root</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="header-section">
+            <h1>Platform Performance</h1>
+            <p style="color: var(--text-muted);">Real-time monitoring of Travelers and Service Providers since 16 March 2026.</p>
+        </header>
+
+        <section class="dashboard-grid">
+            <!-- Widgets for SRS REQ-26 -->
+            <div class="widget">
+                <div class="stat-header">
+                    <div class="stat-icon-box" style="background: var(--primary-gradient);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span class="badge" style="background: rgba(45, 206, 137, 0.1); color: #2dce89;">+12%</span>
+                </div>
+                <div class="stat-label">Total Registered Users</div>
+                <div class="stat-value" id="count-users">4,821</div>
+            </div>
+
+            <div class="widget">
+                <div class="stat-header">
+                    <div class="stat-icon-box" style="background: var(--accent-gradient);">
+                        <i class="fas fa-building"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Active Listings</div>
+                <div class="stat-value" id="count-listings">1,250</div>
+            </div>
+
+            <div class="widget">
+                <div class="stat-header">
+                    <div class="stat-icon-box" style="background: var(--pink-gradient);">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Trip Plans Saved</div>
+                <div class="stat-value" id="count-trips">892</div>
+            </div>
+
+            <div class="widget">
+                <div class="stat-header">
+                    <div class="stat-icon-box" style="background: #3F51B5;">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Budget Volume</div>
+                <div class="stat-value" id="val-budget">2.4M</div>
+            </div>
+
+            <!-- Management Tiles (Interactive Actions) -->
+            <div class="widget half-width">
+                <div class="card-header" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">Quick Management</h3>
+                </div>
+                <div class="tiles-container">
+                    <a href="#" class="tile" style="background: #6A1B9A;">
+                        <i class="fas fa-user-check"></i>
+                        <span>Role Approvals</span>
+                    </a>
+                    <a href="#" class="tile" style="background: #2196F3;">
+                        <i class="fas fa-edit"></i>
+                        <span>Modify Listings</span>
+                    </a>
+                    <a href="#" class="tile" style="background: #E91E63;">
+                        <i class="fas fa-bell"></i>
+                        <span>System Alerts</span>
+                    </a>
+                    <a href="#" class="tile" style="background: #a0aec0;">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Audit Logs</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity (REQ-27, REQ-28) -->
+            <div class="widget half-width data-card">
+                <div class="card-header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                    <h3 class="card-title">Recent Operators</h3>
+                    <button style="border: none; background: none; color: #2196F3; font-weight: 600; cursor: pointer;">View All</button>
+                </div>
+                <table class="data-table">
+                    <tbody id="operators-list">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Map Summary (REQ-30 Idea) -->
+            <div class="widget full-width" style="height: 300px; display: flex; align-items: center; justify-content: center; background: #e0e7ff; background-image: url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png'); background-size: cover; background-position: center; position: relative;">
+                <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; backdrop-filter: blur(5px);">
+                    <h3 style="font-family: 'Outfit', sans-serif;">Live GPS Coverage</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Active tracking across 12 major cities in Pakistan.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
