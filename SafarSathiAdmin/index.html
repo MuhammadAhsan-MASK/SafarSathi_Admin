@@ -14,6 +14,9 @@
     <script src="/__/firebase/10.8.0/firebase-auth-compat.js"></script>
     <script src="/__/firebase/init.js"></script>
 
+    <!-- Chart.js CDN for Interactive Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Fallback CDN for local offline file:// opening -->
     <script>
       if (typeof firebase === 'undefined') {
@@ -40,6 +43,13 @@
                     <span id="nav-pending-badge" class="badge" style="background:#ff9800; color:white; padding:0.2rem 0.5rem; border-radius:10px; font-size:0.7rem; display:none;">0</span>
                 </a>
             </li>
+            <li>
+                <a class="nav-link" data-tab="advisories">
+                    <i class="fas fa-bullhorn"></i> Emergency Broadcast
+                    <span id="nav-advisories-badge" class="badge" style="background:#e91e63; color:white; padding:0.2rem 0.5rem; border-radius:10px; font-size:0.7rem;">0 LIVE</span>
+                </a>
+            </li>
+            <li><a class="nav-link" data-tab="analytics"><i class="fas fa-chart-line"></i> Analytics & Insights</a></li>
             <li><a class="nav-link" data-tab="listings"><i class="fas fa-layer-group"></i> Live Listings</a></li>
             <li><a class="nav-link" data-tab="users"><i class="fas fa-users"></i> Users</a></li>
         </ul>
@@ -124,6 +134,16 @@
                             <span style="font-weight:600;">Service Approvals</span>
                             <small style="opacity:0.85;">Approve Hotels, Food & Guides</small>
                         </div>
+                        <div class="tile" style="background: #E91E63;" onclick="switchTab('advisories')">
+                            <i class="fas fa-bullhorn" style="font-size:1.4rem;"></i>
+                            <span style="font-weight:600;">Broadcast Alert</span>
+                            <small style="opacity:0.85;">Push alerts to travelers</small>
+                        </div>
+                        <div class="tile" style="background: #00897B;" onclick="switchTab('analytics')">
+                            <i class="fas fa-chart-line" style="font-size:1.4rem;"></i>
+                            <span style="font-weight:600;">Analytics Center</span>
+                            <small style="opacity:0.85;">Interactive chart insights</small>
+                        </div>
                         <div class="tile" style="background: #2196F3;" onclick="switchTab('listings')">
                             <i class="fas fa-edit" style="font-size:1.4rem;"></i>
                             <span style="font-weight:600;">All Live Listings</span>
@@ -145,11 +165,30 @@
                     </table>
                 </div>
 
-                <!-- Pakistan Live Coverage Info -->
-                <div class="widget full-width" style="height: 180px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(106,27,154,0.06), rgba(33,150,243,0.06)); border-radius:24px; position: relative;">
-                    <div style="text-align: center;">
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; color:#6A1B9A;">🇵🇰 SafarSathi National Gateway</h3>
-                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top:4px;">Connecting verified service providers across Islamabad, Hunza, Skardu, Swat, Murree, Lahore & Karachi.</p>
+                <!-- Quick Overview Analytics Preview -->
+                <div class="widget half-width chart-card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title" style="font-family:'Outfit',sans-serif; font-size:1.15rem;"><i class="fas fa-chart-pie" style="color:#6A1B9A;"></i> Catalog Breakdown</h3>
+                        <button class="filter-btn" style="padding:0.25rem 0.7rem; font-size:0.75rem;" onclick="switchTab('analytics')">Explore Analytics →</button>
+                    </div>
+                    <div class="chart-wrapper" style="height: 220px;">
+                        <canvas id="overviewCategoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pakistan Live Coverage Info & Quick Advisory Banner -->
+                <div class="widget half-width" style="display: flex; flex-direction:column; justify-content: center; background: linear-gradient(135deg, rgba(106,27,154,0.06), rgba(33,150,243,0.06)); border-radius:24px; padding: 1.8rem; position: relative;">
+                    <div>
+                        <span class="badge" style="background:#e91e63; color:white; font-size:0.75rem; padding:0.25rem 0.6rem; border-radius:8px;">
+                            <i class="fas fa-broadcast-tower"></i> Live Advisory Status
+                        </span>
+                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; color:#1a1a2e; margin-top:0.6rem;" id="overview-broadcast-headline">No critical road closures reported</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top:4px;" id="overview-broadcast-sub">All national transit arteries operating under standard safety protocol.</p>
+                        <div style="margin-top: 1rem;">
+                            <button class="filter-btn" style="background:#e91e63; color:white; border-color:#e91e63;" onclick="switchTab('advisories')">
+                                <i class="fas fa-paper-plane"></i> Broadcast Emergency Alert
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -180,6 +219,237 @@
                     <i class="fas fa-check-circle" style="font-size: 3rem; color: #4caf50; margin-bottom: 1rem;"></i>
                     <h3>All Caught Up!</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem;">There are currently no pending service submissions awaiting approval.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================== TAB: EMERGENCY BROADCAST (FEATURE 1) ==================== -->
+        <div id="tab-advisories" class="tab-content">
+            <header class="header-section">
+                <div>
+                    <h1>Emergency Road & Travel Advisory Broadcaster</h1>
+                    <p style="color: var(--text-muted);">Publish real-time road closures, severe weather alerts, and safety advisories directly to travelers' mobile home screen.</p>
+                </div>
+                <div>
+                    <span class="badge" style="background:rgba(233,30,99,0.1); color:#e91e63; font-size:0.85rem; padding:0.5rem 1rem;">
+                        <i class="fas fa-satellite-dish"></i> Live Push to Travelers
+                    </span>
+                </div>
+            </header>
+
+            <div class="broadcast-layout">
+                <!-- Broadcaster Form -->
+                <div class="widget broadcast-form-card">
+                    <div class="card-header" style="margin-bottom: 1.2rem;">
+                        <h3 class="card-title"><i class="fas fa-bullhorn" style="color:#e91e63;"></i> Draft Real-Time Advisory</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Select a quick preset or customize details for any destination across Pakistan.</p>
+                    </div>
+
+                    <!-- Quick Presets -->
+                    <div class="preset-label" style="font-size:0.8rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.4rem;">Quick Destination Presets:</div>
+                    <div class="presets-row">
+                        <button type="button" class="preset-chip" onclick="applyAdvisoryPreset('babusar')">❄️ Babusar Pass</button>
+                        <button type="button" class="preset-chip" onclick="applyAdvisoryPreset('hunza')">🏔️ Hunza Valley</button>
+                        <button type="button" class="preset-chip" onclick="applyAdvisoryPreset('skardu')">✈️ Skardu</button>
+                        <button type="button" class="preset-chip" onclick="applyAdvisoryPreset('murree')">🌫️ Murree Fog</button>
+                        <button type="button" class="preset-chip" onclick="applyAdvisoryPreset('swat')">🌲 Swat & Kalam</button>
+                        <button type="button" class="preset-chip" onclick="applyAdvisoryPreset('islamabad')">🏛️ Islamabad</button>
+                    </div>
+
+                    <form id="advisory-form" onsubmit="handleBroadcastSubmit(event)">
+                        <!-- Severity Selection -->
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label class="form-label">Advisory Severity Level *</label>
+                            <div class="severity-selector">
+                                <label class="severity-pill pill-warning selected">
+                                    <input type="radio" name="severity" value="warning" checked onchange="updateSeverityPills()">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Critical / Danger</span>
+                                </label>
+                                <label class="severity-pill pill-caution">
+                                    <input type="radio" name="severity" value="caution" onchange="updateSeverityPills()">
+                                    <i class="fas fa-bell"></i>
+                                    <span>Caution / Warning</span>
+                                </label>
+                                <label class="severity-pill pill-safe">
+                                    <input type="radio" name="severity" value="safe" onchange="updateSeverityPills()">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Safe / All Clear</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label class="form-label">Destination / Place Name *</label>
+                                <input type="text" id="adv-place" class="form-input" required placeholder="e.g. Babusar Top & Kaghan">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label class="form-label">Region / Province *</label>
+                                <input type="text" id="adv-region" class="form-input" required placeholder="e.g. Gilgit-Baltistan / KP">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Headline / Live Ticker Summary *</label>
+                            <input type="text" id="adv-headline" class="form-input" required placeholder="e.g. Heavy snowfall blocks Babusar Pass; divert via Karakoram Highway">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label class="form-label">Road Condition</label>
+                                <input type="text" id="adv-road" class="form-input" placeholder="e.g. Pass blocked; Besham/KKH open">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label class="form-label">Vehicle Recommendation</label>
+                                <input type="text" id="adv-vehicle" class="form-input" placeholder="e.g. 4x4 mandatory with snow chains">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label class="form-label">Weather & Temperature</label>
+                                <input type="text" id="adv-weather" class="form-input" placeholder="e.g. -4°C, Heavy Snowfall & Frost">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label class="form-label">Emergency Helpline</label>
+                                <input type="text" id="adv-helpline" class="form-input" placeholder="e.g. 1422 (GB Tourism Police)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Official Source Authority</label>
+                            <input type="text" id="adv-source" class="form-input" placeholder="e.g. NDMA, GBDMA & PMD Weather Bureau">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Full Travel Advisory Report *</label>
+                            <textarea id="adv-report" class="form-input form-textarea" rows="3" required placeholder="Provide travelers with in-depth instructions, alternative routes, safety precautions, and timing details..."></textarea>
+                        </div>
+
+                        <input type="hidden" id="adv-image" value="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=600">
+
+                        <button type="submit" id="btn-broadcast" class="btn-broadcast-submit">
+                            <i class="fas fa-paper-plane"></i> Broadcast Live Alert to Mobile App
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Active Advisories Right Column -->
+                <div class="widget broadcast-list-card">
+                    <div class="card-header" style="margin-bottom: 1.2rem; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 class="card-title">Active Broadcast Alerts</h3>
+                            <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Currently beaming to all travelers on SastaSafar app.</p>
+                        </div>
+                        <span id="active-broadcasts-count" class="badge" style="background:#e91e63; color:white;">0 Active</span>
+                    </div>
+
+                    <div id="active-advisories-container" class="active-advisories-list">
+                        <div style="text-align:center; padding:3rem 1rem; color:var(--text-muted);">
+                            <i class="fas fa-satellite" style="font-size:2.5rem; color:#cbd5e1; margin-bottom:1rem;"></i>
+                            <h4>No Active Advisories</h4>
+                            <p style="font-size:0.85rem;">Post an advisory on the left to push a live notification and ticker alert to all mobile app users.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================== TAB: ANALYTICS & INSIGHTS (FEATURE 2) ==================== -->
+        <div id="tab-analytics" class="tab-content">
+            <header class="header-section">
+                <div>
+                    <h1>Interactive Analytics & Platform Intelligence</h1>
+                    <p style="color: var(--text-muted);">Data-driven insights covering listings distribution, verification velocity, destination hubs, and pricing analytics across Pakistan.</p>
+                </div>
+                <button class="filter-btn" style="background:#6A1B9A; color:white;" onclick="updateAnalyticsCharts()"><i class="fas fa-sync-alt"></i> Refresh Analytics</button>
+            </header>
+
+            <!-- KPI Metric Cards -->
+            <div class="dashboard-grid" style="margin-bottom: 1.5rem;">
+                <div class="widget">
+                    <div class="stat-header">
+                        <div class="stat-icon-box" style="background: var(--primary-gradient);"><i class="fas fa-shield-alt"></i></div>
+                        <span class="badge" style="background: rgba(106, 27, 154, 0.1); color: #6A1B9A;">Health</span>
+                    </div>
+                    <div class="stat-label">Verified Coverage Rate</div>
+                    <div class="stat-value" id="kpi-coverage-rate">--%</div>
+                </div>
+
+                <div class="widget">
+                    <div class="stat-header">
+                        <div class="stat-icon-box" style="background: var(--green-gradient);"><i class="fas fa-map-pin"></i></div>
+                        <span class="badge" style="background: rgba(46, 125, 50, 0.1); color: #2e7d32;">Top Hub</span>
+                    </div>
+                    <div class="stat-label">Leading Destination</div>
+                    <div class="stat-value" id="kpi-top-hub" style="font-size:1.5rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">--</div>
+                </div>
+
+                <div class="widget">
+                    <div class="stat-header">
+                        <div class="stat-icon-box" style="background: var(--orange-gradient);"><i class="fas fa-money-bill-wave"></i></div>
+                        <span class="badge" style="background: rgba(230, 81, 0, 0.1); color: #e65100;">Economy</span>
+                    </div>
+                    <div class="stat-label">Avg Hotel Nightly Rate</div>
+                    <div class="stat-value" id="kpi-avg-hotel">PKR --</div>
+                </div>
+
+                <div class="widget">
+                    <div class="stat-header">
+                        <div class="stat-icon-box" style="background: var(--accent-gradient);"><i class="fas fa-hiking"></i></div>
+                        <span class="badge" style="background: rgba(3, 169, 244, 0.1); color: #03a9f4;">Guides</span>
+                    </div>
+                    <div class="stat-label">Avg Guide Day Rate</div>
+                    <div class="stat-value" id="kpi-avg-guide">PKR --</div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="analytics-charts-grid">
+                <div class="widget chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-pie" style="color:#6A1B9A;"></i> Listings Distribution by Category</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Proportion of Hotels, Restaurants, Transport & Guides in SafarSathi catalog.</p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-tasks" style="color:#2e7d32;"></i> Verification Pipeline Health</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Live published listings vs submissions currently awaiting admin review.</p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="verificationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="analytics-charts-grid" style="margin-top: 1.5rem;">
+                <div class="widget chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-map-marked-alt" style="color:#2196F3;"></i> Regional Destination Hubs</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Active service density across prime Pakistan travel destinations.</p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="regionalChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-tags" style="color:#E91E63;"></i> Pricing Spectrum Comparison (PKR)</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Average baseline pricing across different tourism categories.</p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="pricingChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>

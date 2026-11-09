@@ -435,12 +435,302 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
+/* ==================== FEATURE 1: EMERGENCY ADVISORY BROADCASTER ==================== */
+.broadcast-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.broadcast-form-card, .broadcast-list-card {
+    background: white;
+    border-radius: 24px;
+    padding: 1.8rem;
+    box-shadow: var(--card-shadow);
+}
+
+.presets-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.preset-chip {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.preset-chip:hover {
+    background: #6A1B9A;
+    color: white;
+    border-color: #6A1B9A;
+    transform: translateY(-1px);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    border: 1.5px solid #e2e8f0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.2s;
+    background: #fafafa;
+}
+
+.form-input:focus {
+    border-color: #e91e63;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.12);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Severity Selector */
+.severity-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+}
+
+.severity-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.5rem;
+    border-radius: 14px;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.severity-pill input[type="radio"] {
+    display: none;
+}
+
+.severity-pill.pill-warning {
+    color: #b91c1c;
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.severity-pill.pill-caution {
+    color: #b45309;
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.severity-pill.pill-safe {
+    color: #047857;
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+}
+
+.severity-pill.selected.pill-warning {
+    background: #ef4444;
+    color: white;
+    border-color: #b91c1c;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.severity-pill.selected.pill-caution {
+    background: #f59e0b;
+    color: white;
+    border-color: #d97706;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.severity-pill.selected.pill-safe {
+    background: #10b981;
+    color: white;
+    border-color: #059669;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.btn-broadcast-submit {
+    width: 100%;
+    padding: 0.95rem;
+    background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
+    transition: all 0.25s;
+    margin-top: 1.2rem;
+}
+
+.btn-broadcast-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(233, 30, 99, 0.45);
+}
+
+/* Active Advisory Cards in List */
+.active-advisories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 720px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.live-advisory-item {
+    background: #fafafa;
+    border-radius: 18px;
+    padding: 1.2rem;
+    border-left: 5px solid #ef4444;
+    border-top: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.live-advisory-item:hover {
+    background: white;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.live-advisory-item.sev-warning { border-left-color: #ef4444; }
+.live-advisory-item.sev-caution { border-left-color: #f59e0b; }
+.live-advisory-item.sev-safe { border-left-color: #10b981; }
+
+.live-advisory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.live-advisory-headline {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+.live-advisory-meta {
+    font-size: 0.78rem;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.live-advisory-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.btn-adv-action {
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-adv-delete {
+    color: #ef4444;
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.btn-adv-delete:hover {
+    background: #ef4444;
+    color: white;
+}
+
+
+/* ==================== FEATURE 2: INTERACTIVE ANALYTICS & CHARTS ==================== */
+.analytics-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 24px;
+    padding: 1.8rem;
+    box-shadow: var(--card-shadow);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
 @media (max-width: 1024px) {
     .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     .widget.full-width, .widget.half-width {
         grid-column: span 2;
+    }
+    .broadcast-layout, .analytics-charts-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -462,5 +752,9 @@ body {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.8rem;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 0;
     }
 }
