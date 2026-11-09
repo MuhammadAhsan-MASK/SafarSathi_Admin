@@ -4,3 +4,8 @@ node_modules/
 .idea/
 *.log
 Thumbs.db
+*config.local.js
+firebase-config.js
+*/firebase-config.js
+SafarSathiAdmin/firebase-config.js
+.firebase/
