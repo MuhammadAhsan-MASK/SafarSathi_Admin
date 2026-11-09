@@ -175,33 +175,6 @@ function renderAllViews() {
     updateAnalyticsCharts();
 }
 
-    // Navbar Badge
-    const navBadge = document.getElementById('nav-pending-badge');
-    if (pendingItems.length > 0) {
-        navBadge.style.display = 'inline-block';
-        navBadge.innerText = pendingItems.length;
-    } else {
-        navBadge.style.display = 'none';
-    }
-
-    // Filter counts
-    const hotelsPending = allHotels.filter(h => h.isVerified === false).length;
-    const foodPending = allRestaurants.filter(r => r.isVerified === false).length;
-    const transPending = allTransports.filter(t => t.isVerified === false).length;
-    const guidesPending = allGuides.filter(g => g.isVerified === false).length;
-
-    document.getElementById('filter-count-all').innerText = pendingItems.length;
-    document.getElementById('filter-count-hotels').innerText = hotelsPending;
-    document.getElementById('filter-count-food').innerText = foodPending;
-    document.getElementById('filter-count-transport').innerText = transPending;
-    document.getElementById('filter-count-guides').innerText = guidesPending;
-
-    // Render Sub-Views
-    renderApprovalsGrid(pendingItems);
-    renderQuickApprovals(pendingItems);
-    renderLiveListingsTable(activeItems);
-}
-
 // ── RENDER APPROVALS GRID ────────────────────────────────────────────────────
 function renderApprovalsGrid(pendingItems) {
     const container = document.getElementById('approvals-grid');
@@ -814,67 +787,62 @@ function updateOverviewBroadcastWidget() {
 // FEATURE 2: INTERACTIVE ANALYTICS & INSIGHTS (Chart.js)
 // ============================================================================
 function updateAnalyticsCharts() {
-    if (typeof Chart === 'undefined') return;
+    try {
+        if (typeof Chart === 'undefined') return;
 
-    const allItems = [...allHotels, ...allRestaurants, ...allTransports, ...allGuides];
-    const activeItems = allItems.filter(item => item.isVerified !== false);
-    const pendingItems = allItems.filter(item => item.isVerified === false);
+        const allItems = [...allHotels, ...allRestaurants, ...allTransports, ...allGuides];
+        const activeItems = allItems.filter(item => item.isVerified !== false);
+        const pendingItems = allItems.filter(item => item.isVerified === false);
 
-    // 1. KPI Calculations
-    const coverageRate = allItems.length > 0 ? Math.round((activeItems.length / allItems.length) * 100) : 100;
-    const kpiCoverage = document.getElementById('kpi-coverage-rate');
-    if (kpiCoverage) kpiCoverage.innerText = `${coverageRate}%`;
+        // 1. KPI Calculations
+        const coverageRate = allItems.length > 0 ? Math.round((activeItems.length / allItems.length) * 100) : 100;
+        const kpiCoverage = document.getElementById('kpi-coverage-rate');
+        if (kpiCoverage) kpiCoverage.innerText = `${coverageRate}%`;
 
-    // Calculate Top Destination Hub
-    const locationCounts = {};
-    allItems.forEach(item => {
-        let loc = (item.location || item.city || item.region || 'Islamabad').trim();
-        // Clean up common names
-        const locLower = loc.toLowerCase();
-        if (locLower.includes('islamabad')) loc = 'Islamabad';
-        else if (locLower.includes('hunza')) loc = 'Hunza';
-        else if (locLower.includes('skardu')) loc = 'Skardu';
-        else if (locLower.includes('murree')) loc = 'Murree';
-        else if (locLower.includes('swat')) loc = 'Swat';
-        else if (locLower.includes('lahore')) loc = 'Lahore';
-        else if (locLower.includes('karachi')) loc = 'Karachi';
-        else if (locLower.includes('peshawar')) loc = 'Peshawar';
-        else if (locLower.includes('kaghan') || locLower.includes('naran')) loc = 'Naran / Kaghan';
-        
-        locationCounts[loc] = (locationCounts[loc] || 0) + 1;
-    });
+        // Calculate Top Destination Hub
+        const locationCounts = {};
+        allItems.forEach(item => {
+            let loc = (item.location || item.city || item.region || 'Islamabad').trim();
+            const locLower = loc.toLowerCase();
+            if (locLower.includes('islamabad')) loc = 'Islamabad';
+            else if (locLower.includes('hunza')) loc = 'Hunza';
+            else if (locLower.includes('skardu')) loc = 'Skardu';
+            else if (locLower.includes('murree')) loc = 'Murree';
+            else if (locLower.includes('swat')) loc = 'Swat';
+            else if (locLower.includes('lahore')) loc = 'Lahore';
+            else if (locLower.includes('karachi')) loc = 'Karachi';
+            else if (locLower.includes('peshawar')) loc = 'Peshawar';
+            else if (locLower.includes('kaghan') || locLower.includes('naran')) loc = 'Naran / Kaghan';
+            
+            locationCounts[loc] = (locationCounts[loc] || 0) + 1;
+        });
 
-    const sortedLocations = Object.entries(locationCounts).sort((a, b) => b[1] - a[1]);
-    const topHub = sortedLocations.length > 0 ? sortedLocations[0][0] : 'Islamabad';
-    const kpiTopHub = document.getElementById('kpi-top-hub');
-    if (kpiTopHub) kpiTopHub.innerText = topHub;
+        const sortedLocations = Object.entries(locationCounts).sort((a, b) => b[1] - a[1]);
+        const topHub = sortedLocations.length > 0 ? sortedLocations[0][0] : 'Islamabad';
+        const kpiTopHub = document.getElementById('kpi-top-hub');
+        if (kpiTopHub) kpiTopHub.innerText = topHub;
 
-    // Calculate Average Hotel Price
-    const hotelPrices = allHotels.map(h => parseFloat(h.price) || 0).filter(p => p > 0);
-    const avgHotelPrice = hotelPrices.length > 0 ? Math.round(hotelPrices.reduce((a, b) => a + b, 0) / hotelPrices.length) : 8500;
-    const kpiAvgHotel = document.getElementById('kpi-avg-hotel');
-    if (kpiAvgHotel) kpiAvgHotel.innerText = `PKR ${avgHotelPrice.toLocaleString()}`;
+        // Calculate Average Hotel Price
+        const hotelPrices = allHotels.map(h => parseFloat(h.price) || 0).filter(p => p > 0);
+        const avgHotelPrice = hotelPrices.length > 0 ? Math.round(hotelPrices.reduce((a, b) => a + b, 0) / hotelPrices.length) : 8500;
+        const kpiAvgHotel = document.getElementById('kpi-avg-hotel');
+        if (kpiAvgHotel) kpiAvgHotel.innerText = `PKR ${avgHotelPrice.toLocaleString()}`;
 
-    // Calculate Average Guide Price
-    const guidePrices = allGuides.map(g => parseFloat(g.dailyRate || g.price) || 0).filter(p => p > 0);
-    const avgGuidePrice = guidePrices.length > 0 ? Math.round(guidePrices.reduce((a, b) => a + b, 0) / guidePrices.length) : 4500;
-    const kpiAvgGuide = document.getElementById('kpi-avg-guide');
-    if (kpiAvgGuide) kpiAvgGuide.innerText = `PKR ${avgGuidePrice.toLocaleString()}`;
+        // Calculate Average Guide Price
+        const guidePrices = allGuides.map(g => parseFloat(g.dailyRate || g.price) || 0).filter(p => p > 0);
+        const avgGuidePrice = guidePrices.length > 0 ? Math.round(guidePrices.reduce((a, b) => a + b, 0) / guidePrices.length) : 4500;
+        const kpiAvgGuide = document.getElementById('kpi-avg-guide');
+        if (kpiAvgGuide) kpiAvgGuide.innerText = `PKR ${avgGuidePrice.toLocaleString()}`;
 
-    // 2. Chart 1: Category Distribution (Doughnut)
-    renderCategoryChart();
-
-    // 3. Chart 2: Verification Pipeline (Doughnut)
-    renderVerificationChart(activeItems.length, pendingItems.length);
-
-    // 4. Chart 3: Regional Hubs (Horizontal Bar)
-    renderRegionalChart(sortedLocations);
-
-    // 5. Chart 4: Pricing Comparison (Bar)
-    renderPricingChart(avgHotelPrice, avgGuidePrice);
-
-    // 6. Overview Mini Chart
-    renderOverviewChart();
+        // 2. Chart Renders with safety guards
+        try { renderCategoryChart(); } catch (e) { console.warn("Category chart:", e); }
+        try { renderVerificationChart(activeItems.length, pendingItems.length); } catch (e) { console.warn("Verification chart:", e); }
+        try { renderRegionalChart(sortedLocations); } catch (e) { console.warn("Regional chart:", e); }
+        try { renderPricingChart(avgHotelPrice, avgGuidePrice); } catch (e) { console.warn("Pricing chart:", e); }
+        try { renderOverviewChart(); } catch (e) { console.warn("Overview chart:", e); }
+    } catch (err) {
+        console.warn("Analytics computation error:", err);
+    }
 }
 
 function renderCategoryChart() {
